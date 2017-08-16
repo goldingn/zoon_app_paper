@@ -217,7 +217,7 @@ set.seed(1633)
 
 ```
 
-```{r fengworkflow, eval = TRUE, dpi = 600, fig.show = "hide", results = "hide", message = FALSE, fig.height = 7, fig.width = 9}
+```{r fengworkflow, eval = TRUE, dpi = 600, fig.show = "hide", results = "hide", message = FALSE, fig.height = 8.27, fig.width = 10.63}
 FengPapes <- 
   workflow(occurrence = SpOcc('Dasypus novemcinctus',
                               extent = c(-130, -20, -60, 60)),
@@ -244,14 +244,14 @@ The object `FengPapes` could therefore be saved as a binary file and shared as a
 Next, we update the workflow to produce an interactive map enabling anyone to inspect the data and predictions on a zoomable map, and to inspect the response curves of the fitted model. These outputs are shown in Figure 2, panels B and C.
 Various other output modules could be used here, e.g. to validate models, project distributions to new regions, or save prediction maps in a variety of formats.
 
-```{r fengChangeWorkflow, eval = TRUE, fig.show = "hide", fig.height = 9, fig.width = 7.5, dev.args = list(pointsize = 16)}
+```{r fengChangeWorkflow, eval = TRUE, fig.show = "hide", fig.height = 9, fig.width = 7.5, dev.args = list(pointsize = 16), dpi = 600}
 FengPapesUpdate <- 
   ChangeWorkflow(workflow = FengPapes,
                    output = Chain(ResponseCurve(cov = 1),
                                   InteractiveMap)) 
 ```
 
-```{r combinefengupdate, eval = TRUE, echo = FALSE, dpi = 600, fig.show = "hide", fig.height = 4.5, fig.width = 4.5}
+```{r combinefengupdate, eval = TRUE, echo = FALSE, dpi = 600, fig.show = "hide", fig.height = 8.27, fig.width = 8.27}
 # combine the static and interactive maps and first effect plot
 # load both images
 r_map1 <- brick('figs/fengworkflow-1.png')
@@ -404,7 +404,7 @@ We also compare these models with a standard logistic regression model which doe
 The following workflow fits these models to a previously published presence-background data on the Carolina wren in the USA [@maxlike], maps their predictions (Figure 3) and evaluates the predictive performance of each model against the full presence-absence dataset by AUC.
 Note that setting the regularisation constant in the `maxnet` package to zero caused numerical errors, so we use a small value instead.
 
-```{r maxent_comparison, dpi = 600, fig.show = "hide", eval = TRUE, out.height = 600, out.width = 600}
+```{r maxent_comparison, dpi = 600, fig.show = "hide", eval = TRUE, fig.height = 2.5, fig.width = 4, dev.args = list(pointsize = 9)}
 MaxEntComparison <- workflow(
   occurrence = CarolinaWrenPO,
   covariate  = CarolinaWrenRasters,
@@ -420,30 +420,6 @@ MaxEntComparison <- workflow(
   output     = Chain(PrintMap(points = FALSE),
                      PerformanceMeasures))
 ```
-```{r maxent_buffer, eval = TRUE, echo = FALSE, dpi = 600, fig.show = "hide", out.height = 7, out.width = 7}
-
-# loop through adding a margin to each of the previous figures
-for (i in 1:6) {
-  fpath_in <- sprintf('figs/maxent_comparison-%i.png', i)
-  fpath_out <- sprintf('figs/maxent_buffer-%i.png', i)
-  img <- brick(fpath_in)
-  ext <- as.vector(extent(img))
-
-  png(fpath_out,
-      width = ncol(img),
-      height = nrow(img))
-  
-  par(oma = rep(0, 4), mar = rep(0, 4))
-  plot.new()
-  plot.window(xlim = ext[1:2],
-            ylim = ext[3:4],
-            asp = 1)
-  plotRGB(img, maxpixels = Inf, add = TRUE)
-  
-  dev.off()
-}
-```
-
 
 ```{r save_workflows, echo = FALSE, eval = TRUE}
 # save the three workflow objects
@@ -451,14 +427,14 @@ save(FengPapes, FengPapesUpdate, MaxEntComparison,
      file = 'zoon_applications_paper_workflows.RData')
 ```
 
-```{r maxent_plotting, eval = TRUE, echo = FALSE, dpi = 600, fig.show = "hide", fig.height = 7, fig.width = 9}
+```{r maxent_plotting, eval = TRUE, echo = FALSE, dpi = 600, fig.show = "hide", fig.height = 7, fig.width = 8.27}
 
 # plot the figure to disk, then plot in a separate chunk with a legend
 par(mfrow = c(3, 2))
 
 # loop through plotting them
 for (i in 1:6) {
-  fpath <- sprintf('figs/maxent_buffer-%i.png', i)
+  fpath <- sprintf('figs/maxent_comparison-%i.png', i)
   img <- brick(fpath)
   plotRGB(img, maxpixels = Inf)
   mtext(LETTERS[i],
